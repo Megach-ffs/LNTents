@@ -6,17 +6,29 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,125 +44,142 @@ import com.mad.cw21997.R
 import com.mad.cw21997.data.Tent
 import com.mad.cw21997.ui.TentListViewModel
 import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 
+
+enum class AppScreen {
+    TentList,
+    CreateTent,
+    DeleteTent
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AppBar(
+    modifier: Modifier = Modifier
+){
+    TopAppBar(
+        title = {
+            Text(text = "Tents")
+        },
+        modifier = modifier,
+        colors = TopAppBarDefaults.mediumTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        )
+    )
+}
 
 @Composable
 fun AppScreen(
-    tentListViewModel: TentListViewModel = viewModel()
+    tentListViewModel: TentListViewModel = viewModel(),
+    navController: NavHostController = rememberNavController()
 ){
+    Scaffold(
+        topBar = { AppBar() },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { navController.navigate(AppScreen.CreateTent.name) }) {
+                Text(text = "Add")
+            }
+        },
 
-    TentList(tentList = tentListViewModel.tentList)
+    ) {
+        innerPadding ->
+
+        NavHost(
+            navController = navController,
+            startDestination = AppScreen.TentList.name,
+            modifier = Modifier
+                .fillMaxSize()
+//                .verticalScroll(rememberScrollState())
+                .padding(innerPadding)
+        ){
+            composable(route = AppScreen.TentList.name){
+                TentList(
+                    tentList = tentListViewModel.tentList,
+                    onEditButtonClick = { navController.navigate(AppScreen.CreateTent.name) },
+                    onDeleteButtonClick = { navController.navigate(AppScreen.DeleteTent.name) },
+                    modifier = Modifier
+                        .fillMaxSize()
+                )
+            }
+
+            composable(route = AppScreen.CreateTent.name){
+                CreateTentForm(
+                    onCreateButtonClick = { navController.navigate(AppScreen.TentList.name) },
+                    onCancelButtonClick = { navController.navigate(AppScreen.TentList.name) },
+                    modifier = Modifier
+                        .fillMaxSize()
+                )
+            }
+
+            composable(route = AppScreen.DeleteTent.name){
+                DeleteTentForm(
+                    onYesButtonClick = { navController.navigate(AppScreen.TentList.name) },
+                    onNoButtonClick = { navController.navigate(AppScreen.TentList.name) },
+                    modifier = Modifier
+                )
+            }
+        }
+//        TentList(
+//            tentList = tentListViewModel.tentList,
+//            modifier = Modifier.padding(innerPadding)
+//        )
+    }
 
 }
 
+
+
+
+
 @Composable
-fun TentList(
-    tentList: List<Tent>,
+fun DeleteTentForm(
+    onYesButtonClick: () -> Unit = {},
+    onNoButtonClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ){
-    LazyColumn(modifier = modifier.background(Color.White)) {
-        items(tentList.size) { tent ->
-            TentCard(tent = tentList[tent])
-        }
-    }
-}
-
-@Composable
-fun TentCard(tent: Tent, modifier: Modifier = Modifier){
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(16.dp) // Give it room to breathe
-            .shadow(
-                elevation = 10.dp,
-                shape = RoundedCornerShape(8.dp),
-                clip = false
-            )
-            .background(Color.White, shape = RoundedCornerShape(8.dp))
-            .padding(8.dp) // Inner padding
-    ) {
-        Image(
-            painter = painterResource(tent.imageResourceId),
-            contentDescription = null,
-        )
+        modifier = Modifier
+//            .fillMaxWidth()
+            .padding(16.dp)
+            .height(120.dp)
+//            .verticalScroll(rememberScrollState()),
+            .width(280.dp)
+            .background(Color.White),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween
+    ){
+        Text("Are you sure you want to delete this tent?")
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
 
-
-
-        Text(
-            modifier = modifier.padding(top = 16.dp, start = 8.dp),
-            text = tent.brand,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = Color.Gray
-        )
-        Text(
-            modifier = modifier.padding(start = 8.dp, bottom = 16.dp),
-            text = tent.name,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
-
-        // Details
-        Row(modifier = modifier
-            .padding(8.dp)
-            .background(color = Color.LightGray, shape = RoundedCornerShape(8.dp))
-            .height(64.dp)
-            .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column (modifier = Modifier
-//                .fillMaxWidth()
-                .padding(start = 16.dp),
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(text = "Type: ${tent.type}", modifier = Modifier.padding(vertical = 4.dp))
-                Text(text = "Capacity: ${tent.capacity} Person", modifier = Modifier.padding(vertical = 4.dp))
-            }
-            Column(modifier = Modifier
-//                .fillMaxWidth()
-                .padding(end = 16.dp),
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(text = "Waterproof: ${tent.waterProof} mm", modifier = Modifier.padding(vertical = 4.dp))
-                Text(text = "Weight: ${String.format("%.1f", tent.weight / 1000.0)} kg", modifier = Modifier.padding(vertical = 4.dp))
-            }
-        }
-
-        Row(modifier = modifier
-            .padding(8.dp)
-            .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ){
-            Row() {
-                Button(onClick = { /*TODO*/ }) {
-                    Text(text = "Edit")
-                }
-                Button(onClick = { /*TODO*/ }) {
-                    Text(text = "Delete")
-                }
+            Button(onClick = onYesButtonClick) {
+                Text(text = "Yes")
             }
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Button(onClick = { /*TODO*/ }) {
-                    Text(text = "+1")
-                }
-                Text(text = tent.stock.toString(), modifier = modifier.padding(8.dp))
-                Button(onClick = { /*TODO*/ }) {
-                    Text(text = "-1")
-                }
+            Button(onClick = onNoButtonClick) {
+                Text(text = "No")
             }
-
         }
+
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun AppScreenPreview(){
-    AppScreen()
+    DeleteTentForm()
+//    AppScreen()
+//    CreateTentForm()
+
 //    TentCard(
 //        tent = Tent(
 //            id = 1,
