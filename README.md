@@ -5,7 +5,7 @@
 
 ## Validation Requirements for "Create New Product" Form
 
-The application allows users to create a new product of type "Camping: Tent". The "Add New Product" form includes the following 6 domain-specific fields, along with their validation rules and justification:
+The application allows users to create a new product of type "Camping: Tent". The "Add New Product" form includes the following 8 domain-specific fields, along with their validation rules and justification:
 
 ### 1. Model Name
 *   **Field Type:** Text input
@@ -13,7 +13,7 @@ The application allows users to create a new product of type "Camping: Tent". Th
 *   **Validation Rules:**
     *   Cannot be empty.
     *   Must be between 3 and 50 characters in length.
-*   **Argumentation:** The model name is essential for identifying the specific tent. A text input is appropriate for names. The length constraint prevents excessively short (likely invalid) or excessively long (rendering issues) names.
+*   **Argumentation:** The model name is essential for identifying the specific tent. A text input is appropriate for names. The length constraint prevents excessively short or excessively long names.
 
 ### 2. Brand
 *   **Field Type:** Text input
@@ -21,39 +21,51 @@ The application allows users to create a new product of type "Camping: Tent". Th
 *   **Validation Rules:**
     *   Cannot be empty.
     *   Must be at least 2 characters in length.
-*   **Argumentation:** The brand is crucial for the inventory of outdoor equipment. A text input is required since brands vary widely. A minimum length of 2 characters ensures valid brand names (e.g., "MSR", "REI", "OEX") are permitted while filtering out single-letter typos.
+*   **Argumentation:** The brand is crucial for the inventory of outdoor equipment. A text input is required since brands vary widely.
 
 ### 3. Capacity (Persons)
-*   **Field Type:** Number input (or Slider)
+*   **Field Type:** Text input (Numeric)
 *   **Status:** Required
 *   **Validation Rules:**
     *   Cannot be empty.
-    *   Must be an integer value.
-    *   Must be greater than 0 and less than or equal to 20.
-*   **Argumentation:** Tent capacity is a standard integer metric (e.g., "2-person tent"). A number input explicitly restricts the user to numeric values. The range ensures reasonable capacity values, as a 0-person tent is invalid and a tent larger than 20-person capacity is highly unlikely for typical inventory.
+    *   Must be a valid integer.
+    *   Must be greater than 0.
+*   **Argumentation:** Tent capacity is a standard integer metric (e.g., "2-person tent"). A numeric text input restricts the user to integer values.
 
-### 4. Weight (in kg)
-*   **Field Type:** Number input (Decimal)
+### 4. Weight
+*   **Field Type:** Text input (Numeric)
 *   **Status:** Required
 *   **Validation Rules:**
     *   Cannot be empty.
-    *   Must be a positive decimal number greater than 0.0.
-    *   Cannot exceed 100.0 kg.
-*   **Argumentation:** Weight is a critical specification for tents, particularly for backpacking. A decimal number input is necessary because tent weights often include fractions (e.g., 2.5 kg). It must be greater than zero.
+    *   Must be a valid integer greater than 0.
+*   **Argumentation:** Weight is a critical specification for tents. An integer input is used here (e.g., in grams or standardized units) to ensure accurate cargo calculations.
 
-### 5. Season Rating
-*   **Field Type:** Drop-down menu
+### 5. Water Proof Rating
+*   **Field Type:** Text input (Numeric)
 *   **Status:** Required
 *   **Validation Rules:**
-    *   User must select exactly one option from the predefined list: "1-Season", "2-Season", "3-Season", "4-Season", "5-Season/Expedition".
-    *   Cannot be empty/unselected.
-*   **Argumentation:** Tents follow standard season classifications. A drop-down menu is the perfect UI component because it restricts the user to valid, predefined categories, preventing typos and unstructured data entry.
+    *   Cannot be empty.
+    *   Must be a valid integer (e.g., representing Hydrostatic Head in mm).
+*   **Argumentation:** Water resistance is a key feature of tents. Representing it as a numeric rating (e.g., 3000mm) provides precise information about the tent's capabilities compared to a simple boolean check.
 
-### 6. Is Waterproof
-*   **Field Type:** Check box (or Switch)
-*   **Status:** Optional (though by default, it acts as a boolean state)
+### 6. Tent Type
+*   **Field Type:** Radio buttons
+*   **Status:** Required
 *   **Validation Rules:**
-    *   Only accepts true/false boolean state based on whether it is checked or not.
-*   **Argumentation:** Water resistance is a key feature of tents. A check box is the most intuitive and standard way to represent a binary (Yes/No) property.
+    *   User must select exactly one option from: "Dome", "Tunnel", "Geodesic".
+*   **Argumentation:** Tents are commonly categorized into these structural shapes. Radio buttons are the ideal UI component as they present all options at once and restrict selection to a single valid category.
 
-*(Note: The stock quantity is handled independently as part of the assignment requirements and is validated to be $\ge$ 0).*
+### 7. Stock
+*   **Field Type:** Text input (Numeric)
+*   **Status:** Required
+*   **Validation Rules:**
+    *   Cannot be empty.
+    *   Must be an integer >= 0.
+*   **Argumentation:** The quantity of items available in the inventory. It cannot be negative.
+
+### 8. Image URL
+*   **Field Type:** Text input
+*   **Status:** Optional
+*   **Validation Rules:**
+    *   If provided, must be a formatted string (URL).
+*   **Argumentation:** Allows adding a visual reference for the inventory item, which improves usability and item identification.
