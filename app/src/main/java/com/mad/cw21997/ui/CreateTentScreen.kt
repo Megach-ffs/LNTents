@@ -37,6 +37,7 @@ fun CreateTentForm(
     imageResourceId: Int = 0,
     onCreateButtonClick: () -> Unit = {},
     onCancelButtonClick: () -> Unit = {},
+    createTentModel: CreateTentModel = CreateTentModel(),
     modifier: Modifier = Modifier
 ){
     Column(modifier = modifier

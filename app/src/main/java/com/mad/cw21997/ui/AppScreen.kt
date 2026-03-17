@@ -30,6 +30,8 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.dropShadow
@@ -48,6 +50,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.mad.cw21997.data.TentTestData
 
 
 enum class AppScreen {
@@ -75,8 +78,12 @@ fun AppBar(
 @Composable
 fun AppScreen(
     tentListViewModel: TentListViewModel = viewModel(),
+    createTentModel: CreateTentModel = viewModel(),
     navController: NavHostController = rememberNavController()
 ){
+
+    val tentListUiState by tentListViewModel.uiState.collectAsState()
+
     Scaffold(
         topBar = { AppBar() },
         floatingActionButton = {
@@ -98,7 +105,7 @@ fun AppScreen(
         ){
             composable(route = AppScreen.TentList.name){
                 TentList(
-                    tentList = tentListViewModel.tentList,
+                    tentList = tentListUiState.tentList,
                     onEditButtonClick = { navController.navigate(AppScreen.CreateTent.name) },
                     onDeleteButtonClick = { navController.navigate(AppScreen.DeleteTent.name) },
                     modifier = Modifier
@@ -110,6 +117,7 @@ fun AppScreen(
                 CreateTentForm(
                     onCreateButtonClick = { navController.navigate(AppScreen.TentList.name) },
                     onCancelButtonClick = { navController.navigate(AppScreen.TentList.name) },
+                    createTentModel = createTentModel,
                     modifier = Modifier
                         .fillMaxSize()
                 )

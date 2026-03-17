@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mad.cw21997.data.Tent
+import com.mad.cw21997.data.TentTestData
 
 @Composable
 fun TentList(
@@ -142,7 +143,7 @@ fun TentCard(
 
 @Preview(showBackground = true)
 @Composable
-fun TentListPreview(tentListViewModel: TentListViewModel = viewModel()){
+fun TentListPreview(tentListViewModel: TentTestData = viewModel()){
 
 //    val tentListViewModel = TentListViewModel()
 
