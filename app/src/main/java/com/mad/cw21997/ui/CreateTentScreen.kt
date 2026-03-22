@@ -10,16 +10,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -43,7 +47,9 @@ fun CreateTentForm(
         TextField(
             modifier = Modifier.fillMaxWidth(),
             value = uiState.name,
-            onValueChange = { createTentModel.updateName(it) }
+            onValueChange = { createTentModel.updateName(it) },
+            isError = uiState.nameError != null,
+            supportingText = {uiState.nameError?.let { Text(it) }}
         )
         Spacer(Modifier.height(16.dp))
 
@@ -51,7 +57,9 @@ fun CreateTentForm(
         TextField(
             modifier = Modifier.fillMaxWidth(),
             value = uiState.brand,
-            onValueChange = { createTentModel.updateBrand(it) }
+            onValueChange = { createTentModel.updateBrand(it) },
+            isError = uiState.brandError != null,
+            supportingText = {uiState.brandError?.let { Text(it) }}
         )
         Spacer(Modifier.height(16.dp))
 
@@ -63,16 +71,22 @@ fun CreateTentForm(
             Column(modifier = Modifier.weight(1f)) {
                 Text("Capacity:")
                 TextField(
-                    value = if (uiState.capacity == 0) "" else uiState.capacity.toString(),
-                    onValueChange = { createTentModel.updateCapacity(it) }
+                    value = uiState.capacity,
+                    onValueChange = { createTentModel.updateCapacity(it) },
+                    isError = uiState.capacityError != null,
+                    supportingText = { uiState.capacityError?.let { Text(it) } },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
             }
             Spacer(Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text("Weight (g):")
                 TextField(
-                    value = if (uiState.weight == 0) "" else uiState.weight.toString(),
-                    onValueChange = { createTentModel.updateWeight(it) }
+                    value = uiState.weight,
+                    onValueChange = { createTentModel.updateWeight(it) },
+                    isError = uiState.weightError != null,
+                    supportingText = { uiState.weightError?.let { Text(it) } },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
             }
         }
@@ -81,8 +95,11 @@ fun CreateTentForm(
         Text("Water Proof (mm):")
         TextField(
             modifier = Modifier.fillMaxWidth(),
-            value = if (uiState.waterProof == 0) "" else uiState.waterProof.toString(),
-            onValueChange = { createTentModel.updateWaterProof(it) }
+            value = uiState.waterProof,
+            onValueChange = { createTentModel.updateWaterProof(it) },
+            isError = uiState.waterProofError != null,
+            supportingText = { uiState.waterProofError?.let { Text(it) } },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
         Spacer(Modifier.height(16.dp))
 
@@ -107,8 +124,11 @@ fun CreateTentForm(
         Text("Stock:")
         TextField(
             modifier = Modifier.fillMaxWidth(),
-            value = if (uiState.stock == 0) "" else uiState.stock.toString(),
-            onValueChange = { createTentModel.updateStock(it) }
+            value = uiState.stock,
+            onValueChange = { createTentModel.updateStock(it) },
+            isError = uiState.stockError != null,
+            supportingText = { uiState.stockError?.let { Text(it) } },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
         Spacer(Modifier.height(16.dp))
 
@@ -116,7 +136,9 @@ fun CreateTentForm(
         TextField(
             modifier = Modifier.fillMaxWidth(),
             value = uiState.imageUrl,
-            onValueChange = { createTentModel.updateImageUrl(it) }
+            onValueChange = { createTentModel.updateImageUrl(it) },
+            isError = uiState.imageUrlError != null,
+            supportingText = {uiState.imageUrlError?.let { Text(it) }}
         )
         Spacer(Modifier.height(24.dp))
 
@@ -131,7 +153,7 @@ fun CreateTentForm(
                     })
 //                    onCreateButtonClick()
                 },
-                enabled = uiState.name.isNotBlank() && uiState.brand.isNotBlank()
+                enabled = uiState.isFormValid
             ) {
                 Text(text = if (uiState.editMode) "Update" else "Create")
             }

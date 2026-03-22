@@ -19,10 +19,13 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -81,6 +84,20 @@ fun AppScreen(
     // State to hold the tent being deleted
     var tentToDelete by remember { mutableStateOf<Tent?>(null) }
 
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        tentListViewModel.userMessage.collect { message ->
+            snackbarHostState.showSnackbar(message)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        createTentModel.userMessage.collect { message ->
+            snackbarHostState.showSnackbar(message)
+        }
+    }
+
     Scaffold(
         topBar = {
             val title = when (currentRoute) {
@@ -107,6 +124,8 @@ fun AppScreen(
 //                }
 
         },
+
+        snackbarHost =  { SnackbarHost(hostState = snackbarHostState) }
 
         ) { innerPadding ->
 
@@ -149,11 +168,11 @@ fun AppScreen(
                             },
                             increaseStock = { tent ->
                                 tentListViewModel.increaseStock(tent)
-                                navController.navigate(AppScreen.TentList.name)
+//                                navController.navigate(AppScreen.TentList.name)
                             },
                             decreaseStock = { tent ->
                                 tentListViewModel.decreaseStock(tent)
-                                navController.navigate(AppScreen.TentList.name)
+//                                navController.navigate(AppScreen.TentList.name)
                             },
                             modifier = Modifier.fillMaxSize()
                         )

@@ -1,5 +1,6 @@
 package com.mad.cw21997.ui
 
+import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -11,14 +12,20 @@ import com.mad.cw21997.data.Tent
 import com.mad.cw21997.data.TentRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 class CreateTentModel(private val tentRepository: TentRepository): ViewModel() {
 
     private val _uiState = MutableStateFlow(CreateTentUIState())
     val uiState: StateFlow<CreateTentUIState> = _uiState.asStateFlow()
+    
+    private val _userMessage = MutableSharedFlow<String>()
+    val userMessage = _userMessage.asSharedFlow()
+
 
     fun initiateEdit(tent: Tent) {
         _uiState.update { 
@@ -26,60 +33,169 @@ class CreateTentModel(private val tentRepository: TentRepository): ViewModel() {
                 id = tent.id,
                 name = tent.name,
                 brand = tent.brand,
-                capacity = tent.capacity,
-                weight = tent.weight,
-                waterProof = tent.waterProof,
+                capacity = tent.capacity.toString(),
+                weight = tent.weight.toString(),
+                waterProof = tent.waterProof.toString(),
                 type = tent.type,
-                stock = tent.stock,
+                stock = tent.stock.toString(),
                 imageUrl = tent.imageUrl,
                 editMode = true
             )
         }
+        // Run validations on initial data
+        validateName(_uiState.value.name)
+        validateBrand(_uiState.value.brand)
+        validateCapacity(_uiState.value.capacity)
+        validateWeight(_uiState.value.weight)
+        validateWaterProof(_uiState.value.waterProof)
+        validateStock(_uiState.value.stock)
+        validateImageUrl(_uiState.value.imageUrl)
     }
 
     fun clearForm() {
         _uiState.value = CreateTentUIState()
     }
 
-    fun updateName(name: String) { _uiState.update { it.copy(name = name) } }
-    fun updateBrand(brand: String) { _uiState.update { it.copy(brand = brand) } }
-    fun updateCapacity(capacity: String) { _uiState.update { it.copy(capacity = capacity.toIntOrNull() ?: 0) } }
-    fun updateWeight(weight: String) { _uiState.update { it.copy(weight = weight.toIntOrNull() ?: 0) } }
-    fun updateWaterProof(waterProof: String) { _uiState.update { it.copy(waterProof = waterProof.toIntOrNull() ?: 0) } }
-    fun updateType(type: String) { _uiState.update { it.copy(type = type) } }
-    fun updateStock(stock: String) { _uiState.update { it.copy(stock = stock.toIntOrNull() ?: 0) } }
-    fun updateImageUrl(imageUrl: String) { _uiState.update { it.copy(imageUrl = imageUrl) } }
+    fun updateName(name: String) {
+        _uiState.update { it.copy(name = name) }
+        validateName(name)
+    }
+
+    private fun validateName(name: String) {
+        val error = when {
+            name.isBlank() -> "Model name cannot be empty"
+            name.length < 3 -> "Name must be at least 3 characters"
+            name.length > 50 -> "Name cannot exceed 50 characters"
+            else -> null
+        }
+        _uiState.update { it.copy(nameError = error) }
+    }
+
+    fun updateBrand(brand: String) {
+        _uiState.update { it.copy(brand = brand) }
+        validateBrand(brand)
+    }
+
+    private fun validateBrand(brand: String) {
+        val error = when {
+            brand.isBlank() -> "Brand cannot be empty"
+            brand.length < 2 -> "Brand must be at least 2 characters"
+            else -> null
+        }
+        _uiState.update { it.copy(brandError = error) }
+    }
+
+    fun updateCapacity(capacity: String) {
+        _uiState.update { it.copy(capacity = capacity) }
+        validateCapacity(capacity)
+    }
+
+    private fun validateCapacity(capacity: String) {
+        val intVal = capacity.toIntOrNull()
+        val error = when {
+            capacity.isBlank() -> "Capacity cannot be empty"
+            intVal == null -> "Must be a valid integer"
+            intVal <= 0 -> "Capacity must be greater than 0"
+            else -> null
+        }
+        _uiState.update { it.copy(capacityError = error) }
+    }
+
+    fun updateWeight(weight: String) {
+        _uiState.update { it.copy(weight = weight) }
+        validateWeight(weight)
+    }
+
+    private fun validateWeight(weight: String) {
+        val intVal = weight.toIntOrNull()
+        val error = when {
+            weight.isBlank() -> "Weight cannot be empty"
+            intVal == null -> "Must be a valid integer"
+            intVal <= 0 -> "Weight must be greater than 0"
+            else -> null
+        }
+        _uiState.update { it.copy(weightError = error) }
+    }
+
+    fun updateWaterProof(waterProof: String) {
+        _uiState.update { it.copy(waterProof = waterProof) }
+        validateWaterProof(waterProof)
+    }
+
+    private fun validateWaterProof(waterProof: String) {
+        val intVal = waterProof.toIntOrNull()
+        val error = when {
+            waterProof.isBlank() -> "Water proof rating cannot be empty"
+            intVal == null -> "Must be a valid integer"
+            else -> null
+        }
+        _uiState.update { it.copy(waterProofError = error) }
+    }
+
+    fun updateType(type: String) {
+        _uiState.update { it.copy(type = type) }
+    }
+
+    fun updateStock(stock: String) {
+        _uiState.update { it.copy(stock = stock) }
+        validateStock(stock)
+    }
+
+    private fun validateStock(stock: String) {
+        val intVal = stock.toIntOrNull()
+        val error = when {
+            stock.isBlank() -> "Stock cannot be empty"
+            intVal == null -> "Must be a valid integer"
+            intVal < 0 -> "Stock cannot be negative"
+            else -> null
+        }
+        _uiState.update { it.copy(stockError = error) }
+    }
+
+    fun updateImageUrl(imageUrl: String) {
+        _uiState.update { it.copy(imageUrl = imageUrl) }
+        validateImageUrl(imageUrl)
+    }
+
+    private fun validateImageUrl(url: String) {
+        val error = when {
+            url.isNotBlank() && !Patterns.WEB_URL.matcher(url).matches() -> "Invalid URL format"
+            else -> null
+        }
+        _uiState.update { it.copy(imageUrlError = error) }
+    }
 
     fun saveTent(onSuccess: () -> Unit = {}) {
+        if (!_uiState.value.isFormValid) return
 
+        val state = _uiState.value
         val tent = Tent(
-            id = _uiState.value.id,
-            name = _uiState.value.name,
-            brand = _uiState.value.brand,
-            capacity = _uiState.value.capacity,
-            weight = _uiState.value.weight,
-            waterProof = _uiState.value.waterProof,
-            type = _uiState.value.type,
-            stock = _uiState.value.stock,
-            imageUrl = _uiState.value.imageUrl
+            id = state.id,
+            name = state.name,
+            brand = state.brand,
+            capacity = state.capacity.toIntOrNull() ?: 0,
+            weight = state.weight.toIntOrNull() ?: 0,
+            waterProof = state.waterProof.toIntOrNull() ?: 0,
+            type = state.type,
+            stock = state.stock.toIntOrNull() ?: 0,
+            imageUrl = state.imageUrl
         )
 
         viewModelScope.launch {
             try {
-                if (_uiState.value.editMode) {
+                if (state.editMode) {
                     tentRepository.updateTent(tent)
                 } else {
                     tentRepository.postTent(tent)
                 }
                 clearForm()
-
                 onSuccess()
-            } catch (e: Exception){
-
+                _userMessage.emit("Tent saved successfully")
+            } catch (e: Exception) {
+                // Handle error
+                _userMessage.emit("Error saving tent")
             }
         }
-
-
     }
 
     companion object {

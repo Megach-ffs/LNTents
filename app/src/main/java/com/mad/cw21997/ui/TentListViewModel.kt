@@ -20,14 +20,19 @@ import kotlinx.coroutines.launch
 import java.io.IOException
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 class TentListViewModel(private val tentRepository: TentRepository) : ViewModel() {
     private val _uiState = MutableStateFlow<TentListUIState>(TentListUIState.Loading)
     val uiState: StateFlow<TentListUIState> = _uiState.asStateFlow()
 
+    private val _userMessage = MutableSharedFlow<String>()
+    val userMessage = _userMessage.asSharedFlow()
+
     init {
         viewModelScope.launch {
-            delay(500) // Small delay to prevent main thread blocking during app startup
+            delay(500) 
             fetchData()
         }
     }
@@ -57,20 +62,23 @@ class TentListViewModel(private val tentRepository: TentRepository) : ViewModel(
                 val updatedTent = tent.copy(stock = tent.stock + 1)
                 tentRepository.updateTent(updatedTent)
                 fetchData()
+                _userMessage.emit("Stock increased for ${tent.name}")
             } catch (e: Exception) {
-
+                _userMessage.emit("Failed to update stock")
             }
         }
     }
 
     fun decreaseStock(tent: Tent){
+        if (tent.stock <= 0) return
         viewModelScope.launch {
             try {
                 val updatedTent = tent.copy(stock = tent.stock - 1)
                 tentRepository.updateTent(updatedTent)
                 fetchData()
+                _userMessage.emit("Stock decreased for ${tent.name}")
             } catch (e: Exception) {
-
+                _userMessage.emit("Failed to update stock")
             }
         }
     }
@@ -80,8 +88,9 @@ class TentListViewModel(private val tentRepository: TentRepository) : ViewModel(
             try {
                 tentRepository.deleteTent(tent)
                 fetchData()
+                _userMessage.emit("Tent deleted: ${tent.name}")
             } catch (e: Exception) {
-                _uiState.value = TentListUIState.Error
+                _userMessage.emit("Error deleting tent")
             }
         }
     }
