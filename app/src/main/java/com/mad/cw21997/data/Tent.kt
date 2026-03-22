@@ -9,6 +9,5 @@ data class Tent(
     val weight: Int,
     val type: String,
     val stock: Int,
-    val imageUrl: String,
-    val imageResourceId: Int
+    val imageUrl: String
 )

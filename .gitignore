@@ -27,6 +27,7 @@ captures/
 # System files
 .DS_Store
 Thumbs.db
+*.xlsx
 
 # Signing files
 *.jks
@@ -35,3 +36,7 @@ Thumbs.db
 
 # Secrets
 secrets.properties
+
+# Vim
+*.un~
+*~

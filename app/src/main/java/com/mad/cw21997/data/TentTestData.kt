@@ -14,8 +14,7 @@ class TentTestData : ViewModel() {
             weight = 2400,
             type = "Dome",
             stock = 12,
-            imageUrl = "",
-            imageResourceId = R.drawable.tent1
+            imageUrl = ""
         ),
         Tent(
             id = 2,
@@ -26,8 +25,7 @@ class TentTestData : ViewModel() {
             weight = 4200,
             type = "Geodesic",
             stock = 5,
-            imageUrl = "",
-            imageResourceId = R.drawable.tent1
+            imageUrl = ""
         ),
         Tent(
             id = 3,
@@ -38,8 +36,7 @@ class TentTestData : ViewModel() {
             weight = 8500,
             type = "Tunnel",
             stock = 8,
-            imageUrl = "",
-            imageResourceId = R.drawable.tent1
+            imageUrl = ""
         ),
         Tent(
             id = 4,
@@ -50,8 +47,7 @@ class TentTestData : ViewModel() {
             weight = 950,
             type = "Backpacking",
             stock = 15,
-            imageUrl = "",
-            imageResourceId = R.drawable.tent1
+            imageUrl = ""
         )
     )
 }

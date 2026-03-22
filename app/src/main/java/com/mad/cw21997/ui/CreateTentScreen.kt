@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,124 +21,124 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+
 
 @Composable
 fun CreateTentForm(
-    id: Int = 0,
-    name: String = "",
-    brand: String = "",
-    capacity: Int = 0,
-    waterProof: Int = 0,
-    weight: Int = 0,
-    type: String = "",
-    stock: Int = 0,
-    imageUrl: String = "",
-    imageResourceId: Int = 0,
     onCreateButtonClick: () -> Unit = {},
     onCancelButtonClick: () -> Unit = {},
-    createTentModel: CreateTentModel = CreateTentModel(),
+    createTentModel: CreateTentModel,
     modifier: Modifier = Modifier
 ){
+    val uiState by createTentModel.uiState.collectAsState()
+    
     Column(modifier = modifier
-//        .fillMaxWidth()
         .padding(16.dp)
         .verticalScroll(rememberScrollState())
-//        .fillMaxHeight()
-        .background(Color.White),
-//        horizontalAlignment = Alignment.CenterHorizontally
+        .background(Color.White)
     ) {
         Text("Name:")
-        TextField(modifier = Modifier.fillMaxWidth(),value = name, onValueChange = { /*TODO*/ })
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = uiState.name,
+            onValueChange = { createTentModel.updateName(it) }
+        )
         Spacer(Modifier.height(16.dp))
+
         Text("Brand:")
-        TextField(modifier = Modifier.fillMaxWidth(),value = brand, onValueChange = { /*TODO*/ })
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = uiState.brand,
+            onValueChange = { createTentModel.updateBrand(it) }
+        )
         Spacer(Modifier.height(16.dp))
-        Row(modifier = Modifier
-//            .padding(8.dp)
-//            .background(color = Color.LightGray, shape = RoundedCornerShape(8.dp))
-//            .height(64.dp)
-            .fillMaxWidth(),
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column(
-                modifier = Modifier.width(150.dp),
-//                verticalArrangement = Arrangement.SpaceBetween
-            ) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text("Capacity:")
-                TextField(value = capacity.toString(), onValueChange = { /*TODO*/ })
-
+                TextField(
+                    value = if (uiState.capacity == 0) "" else uiState.capacity.toString(),
+                    onValueChange = { createTentModel.updateCapacity(it) }
+                )
             }
-
-//            Spacer(Modifier.width(16.dp))
-            Column(
-                modifier = Modifier.width(150.dp),
-            ) {
-                Text("Weight:")
-                TextField(value = weight.toString(), onValueChange = { /*TODO*/ })
-
-            }
-//            Spacer(Modifier.width(16.dp))
-
-
-        }
-        Spacer(Modifier.height(16.dp))
-
-        Text("Water Proof: ")
-        TextField(modifier=Modifier.fillMaxWidth(),value = waterProof.toString(), onValueChange = { /*TODO*/ })
-        Spacer(Modifier.height(16.dp))
-
-        Text("Tent Type: ")
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(end=16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ){
-            Row(verticalAlignment = Alignment.CenterVertically){
-                RadioButton(selected = true, onClick = { /*TODO*/ })
-                Text("Dome")
-            }
-
-            Row(verticalAlignment = Alignment.CenterVertically){
-                RadioButton(selected = false, onClick = { /*TODO*/ })
-                Text("Tunnel")
-            }
-
-            Row(verticalAlignment = Alignment.CenterVertically){
-                RadioButton(selected = false, onClick = { /*TODO*/ })
-                Text("Geodesic")
+            Spacer(Modifier.width(16.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text("Weight (g):")
+                TextField(
+                    value = if (uiState.weight == 0) "" else uiState.weight.toString(),
+                    onValueChange = { createTentModel.updateWeight(it) }
+                )
             }
         }
         Spacer(Modifier.height(16.dp))
 
-        Text("Stock: ")
-        TextField(modifier=Modifier.fillMaxWidth(),value = stock.toString(), onValueChange = { /*TODO*/ })
+        Text("Water Proof (mm):")
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = if (uiState.waterProof == 0) "" else uiState.waterProof.toString(),
+            onValueChange = { createTentModel.updateWaterProof(it) }
+        )
         Spacer(Modifier.height(16.dp))
 
-        Text("Image:")
-        TextField(modifier=Modifier.fillMaxWidth(),value = imageUrl, onValueChange = { /*TODO*/ })
-        Spacer(Modifier.height(16.dp))
-
-
+        Text("Tent Type:")
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Button(onClick = onCreateButtonClick) {
-                Text(text = "Create")
+            listOf("Dome", "Tunnel", "Geodesic").forEach { type ->
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = uiState.type == type,
+                        onClick = { createTentModel.updateType(type) }
+                    )
+                    Text(type)
+                }
+            }
+        }
+        Spacer(Modifier.height(16.dp))
+
+        Text("Stock:")
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = if (uiState.stock == 0) "" else uiState.stock.toString(),
+            onValueChange = { createTentModel.updateStock(it) }
+        )
+        Spacer(Modifier.height(16.dp))
+
+        Text("Image URL:")
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = uiState.imageUrl,
+            onValueChange = { createTentModel.updateImageUrl(it) }
+        )
+        Spacer(Modifier.height(24.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Button(
+                onClick = { 
+                    createTentModel.saveTent(onSuccess = {
+                        onCreateButtonClick()
+                    })
+//                    onCreateButtonClick()
+                },
+                enabled = uiState.name.isNotBlank() && uiState.brand.isNotBlank()
+            ) {
+                Text(text = if (uiState.editMode) "Update" else "Create")
             }
 
             Button(onClick = onCancelButtonClick) {
                 Text(text = "Cancel")
             }
         }
-
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CreateTentFormPreview(){
-    CreateTentForm()
 }

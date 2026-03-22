@@ -22,23 +22,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mad.cw21997.R
 import com.mad.cw21997.data.Tent
-import com.mad.cw21997.data.TentTestData
 
 @Composable
 fun TentList(
     tentList: List<Tent>,
-    onEditButtonClick: () -> Unit = {},
-    onDeleteButtonClick: () -> Unit = {},
+    onEditButtonClick: (Tent) -> Unit = {},
+    onDeleteButtonClick: (Tent) -> Unit = {},
+    increaseStock: (Tent) -> Unit = {},
+    decreaseStock: (Tent) -> Unit = {},
     modifier: Modifier = Modifier
 ){
     LazyColumn(modifier = modifier) {
-        items(tentList.size) { tent ->
+        items(tentList.size) { index ->
+            val tent = tentList[index]
             TentCard(
-                tent = tentList[tent],
-                onEditButtonClick = onEditButtonClick,
-                onDeleteButtonClick = onDeleteButtonClick
+                tent = tent,
+                onEditButtonClick = { onEditButtonClick(tent) },
+                onDeleteButtonClick = { onDeleteButtonClick(tent) },
+                increaseStock = { increaseStock(tent) },
+                decreaseStock = { decreaseStock(tent) }
             )
         }
     }
@@ -49,44 +53,43 @@ fun TentCard(
     tent: Tent,
     modifier: Modifier = Modifier,
     onEditButtonClick: () -> Unit = {},
-    onDeleteButtonClick: () -> Unit = {}
+    onDeleteButtonClick: () -> Unit = {},
+    increaseStock: () -> Unit = {},
+    decreaseStock: () -> Unit = {}
     ){
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp) // Give it room to breathe
+            .padding(16.dp)
             .shadow(
                 elevation = 10.dp,
                 shape = RoundedCornerShape(8.dp),
                 clip = false
             )
             .background(Color.White, shape = RoundedCornerShape(8.dp))
-            .padding(8.dp) // Inner padding
+            .padding(8.dp)
     ) {
         Image(
-            painter = painterResource(tent.imageResourceId),
+            painter = painterResource(R.drawable.tent1),
             contentDescription = null,
         )
 
-
-
         Text(
-            modifier = modifier.padding(top = 16.dp, start = 8.dp),
+            modifier = Modifier.padding(top = 16.dp, start = 8.dp),
             text = tent.brand,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
             color = Color.Gray
         )
         Text(
-            modifier = modifier.padding(start = 8.dp, bottom = 16.dp),
+            modifier = Modifier.padding(start = 8.dp, bottom = 16.dp),
             text = tent.name,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black
         )
 
-        // Details
-        Row(modifier = modifier
+        Row(modifier = Modifier
             .padding(8.dp)
             .background(color = Color.LightGray, shape = RoundedCornerShape(8.dp))
             .height(64.dp)
@@ -94,17 +97,13 @@ fun TentCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column (modifier = Modifier
-//                .fillMaxWidth()
-                .padding(start = 16.dp),
+            Column (modifier = Modifier.padding(start = 16.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(text = "Type: ${tent.type}", modifier = Modifier.padding(vertical = 4.dp))
                 Text(text = "Capacity: ${tent.capacity} Person", modifier = Modifier.padding(vertical = 4.dp))
             }
-            Column(modifier = Modifier
-//                .fillMaxWidth()
-                .padding(end = 16.dp),
+            Column(modifier = Modifier.padding(end = 16.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(text = "Waterproof: ${tent.waterProof} mm", modifier = Modifier.padding(vertical = 4.dp))
@@ -112,13 +111,13 @@ fun TentCard(
             }
         }
 
-        Row(modifier = modifier
+        Row(modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ){
-            Row() {
+            Row {
                 Button(onClick = onEditButtonClick) {
                     Text(text = "Edit")
                 }
@@ -128,27 +127,14 @@ fun TentCard(
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Button(onClick = { /*TODO*/ }) {
+                Button(onClick = increaseStock) {
                     Text(text = "+1")
                 }
-                Text(text = tent.stock.toString(), modifier = modifier.padding(8.dp))
-                Button(onClick = { /*TODO*/ }) {
+                Text(text = tent.stock.toString(), modifier = Modifier.padding(8.dp))
+                Button(onClick = decreaseStock) {
                     Text(text = "-1")
                 }
             }
-
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TentListPreview(tentListViewModel: TentTestData = viewModel()){
-
-//    val tentListViewModel = TentListViewModel()
-
-    TentList(
-        tentList = tentListViewModel.tentList,
-//        modifier = Modifier.padding(innerPadding)
-    )
 }

@@ -10,6 +10,6 @@ data class CreateTentUIState (
     val type: String = "",
     val stock: Int = 0,
     val imageUrl: String = "",
-    val imageResourceId: Int = 0
+    val editMode: Boolean = false
 
-    )
+)
