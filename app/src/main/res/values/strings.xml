@@ -1,3 +1,69 @@
 <resources>
     <string name="app_name">CW21997</string>
+
+    <!-- Create Tent Screen Labels -->
+    <string name="name_label">Name:</string>
+    <string name="brand_label">Brand:</string>
+    <string name="capacity_label">Capacity:</string>
+    <string name="weight_label">Weight (g):</string>
+    <string name="water_proof_label">Water Proof (mm):</string>
+    <string name="tent_type_label">Tent Type:</string>
+    <string name="stock_label">Stock:</string>
+    <string name="image_url_label">Image URL:</string>
+
+    <!-- Buttons -->
+    <string name="update_button">Update</string>
+    <string name="create_button">Create</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="edit_button">Edit</string>
+    <string name="delete_button">Delete</string>
+    <string name="increase_stock">+1</string>
+    <string name="decrease_stock">-1</string>
+    <string name="fab_add">Add</string>
+    <string name="yes_button">Yes</string>
+    <string name="no_button">No</string>
+
+    <!-- App Bar Titles -->
+    <string name="app_bar_title_tents">Tents</string>
+    <string name="app_bar_title_edit_tent">Edit Tent</string>
+    <string name="app_bar_title_create_tent">Create Tent</string>
+    <string name="delete_dialog_title">Delete Tent</string>
+
+    <!-- UI States -->
+    <string name="loading_text">Loading...</string>
+    <string name="error_loading_text">Error loading data...</string>
+    <string name="delete_dialog_text">Are you sure you want to delete this tent?</string>
+
+    <!-- Tent List Screen Formats -->
+    <string name="type_format">Type: %1$s</string>
+    <string name="capacity_format">Capacity: %1$d Person</string>
+    <string name="waterproof_format">Waterproof: %1$d mm</string>
+    <string name="weight_format">Weight: %1$s kg</string>
+
+    <!-- Validation Errors -->
+    <string name="error_name_empty">Model name cannot be empty</string>
+    <string name="error_name_short">Name must be at least 3 characters</string>
+    <string name="error_name_long">Name cannot exceed 50 characters</string>
+    <string name="error_brand_empty">Brand cannot be empty</string>
+    <string name="error_brand_short">Brand must be at least 2 characters</string>
+    <string name="error_capacity_empty">Capacity cannot be empty</string>
+    <string name="error_invalid_integer">Must be a valid integer</string>
+    <string name="error_capacity_min">Capacity must be greater than 0</string>
+    <string name="error_weight_empty">Weight cannot be empty</string>
+    <string name="error_weight_min">Weight must be greater than 0</string>
+    <string name="error_waterproof_empty">Water proof rating cannot be empty</string>
+    <string name="error_stock_empty">Stock cannot be empty</string>
+    <string name="error_stock_negative">Stock cannot be negative</string>
+    <string name="error_invalid_url">Invalid URL format</string>
+
+    <!-- Messages -->
+    <string name="message_tent_saved">Tent saved successfully</string>
+    <string name="message_error_saving">Error saving tent</string>
+    <string name="message_network_error">Network error</string>
+    <string name="message_unknown_error">Unknown error</string>
+    <string name="message_stock_increased">Stock increased for %1$s</string>
+    <string name="message_stock_decreased">Stock decreased for %1$s</string>
+    <string name="message_update_failed">Failed to update stock</string>
+    <string name="message_tent_deleted">Tent deleted: %1$s</string>
+    <string name="message_delete_failed">Error deleting tent</string>
 </resources>

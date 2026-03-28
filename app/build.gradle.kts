@@ -69,5 +69,8 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 
+    // Coil
+    implementation(libs.coil.compose)
+
 //    androidTestImplementation("androidx.navigation:navigation-testing:2.7.4")
 }

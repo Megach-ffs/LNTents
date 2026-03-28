@@ -1,5 +1,7 @@
 package com.mad.cw21997.ui
 
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -19,6 +21,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.io.IOException
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+//import com.mad.cw21997.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -50,8 +53,14 @@ class TentListViewModel(private val tentRepository: TentRepository) : ViewModel(
 
                 val listResult = tentRepository.getTentData()
                 _uiState.value = TentListUIState.Success(listResult)
+            } catch (e: IOException) {
+                _uiState.value = TentListUIState.Error
+                _userMessage.emit("Network error")
+                Log.e("TentListViewModel", "Network error", e)
             } catch (e: Exception) {
                 _uiState.value = TentListUIState.Error
+                _userMessage.emit("")
+                Log.e("TentListViewModel", "Unknown error", e)
             }
         }
     }

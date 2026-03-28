@@ -13,7 +13,10 @@ interface AppContainer {
 class DefaultAppContainer: AppContainer {
     private val baseUrl = "https://wiutmadcw.uz/api/v1/"
 
-    private val json = Json { ignoreUnknownKeys = true }
+    private val json = Json {
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+    }
 
     private val retrofit = Retrofit.Builder()
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))

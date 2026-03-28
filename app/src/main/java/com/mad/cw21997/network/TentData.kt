@@ -13,15 +13,15 @@ data class TentResponse(
 @Serializable
 data class TentData (
     val id: Int,
-    val title: String,
-    val description: String,
-    val size: String,
+    val title: String = "",
+    val description: String = "",
+    val size: String = "",
     @SerialName("integer_one")
     val weight: String = "",
     @SerialName("integer_two")
     val waterProof: String = "",
-    val type: String,
+    val type: String = "",
     @SerialName("integer_three")
     val stock: String = "",
-    val url: String
+    val url: String = ""
 )

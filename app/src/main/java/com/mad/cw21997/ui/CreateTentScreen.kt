@@ -18,13 +18,16 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+//import androidx.compose.runtime.R
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.mad.cw21997.R
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 
@@ -43,7 +46,7 @@ fun CreateTentForm(
         .verticalScroll(rememberScrollState())
         .background(Color.White)
     ) {
-        Text("Name:")
+        Text(stringResource(R.string.name_label))
         TextField(
             modifier = Modifier.fillMaxWidth(),
             value = uiState.name,
@@ -53,7 +56,7 @@ fun CreateTentForm(
         )
         Spacer(Modifier.height(16.dp))
 
-        Text("Brand:")
+        Text(stringResource(R.string.brand_label))
         TextField(
             modifier = Modifier.fillMaxWidth(),
             value = uiState.brand,
@@ -69,7 +72,7 @@ fun CreateTentForm(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("Capacity:")
+                Text(stringResource(R.string.capacity_label))
                 TextField(
                     value = uiState.capacity,
                     onValueChange = { createTentModel.updateCapacity(it) },
@@ -80,7 +83,7 @@ fun CreateTentForm(
             }
             Spacer(Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text("Weight (g):")
+                Text(stringResource(R.string.weight_label))
                 TextField(
                     value = uiState.weight,
                     onValueChange = { createTentModel.updateWeight(it) },
@@ -92,7 +95,7 @@ fun CreateTentForm(
         }
         Spacer(Modifier.height(16.dp))
 
-        Text("Water Proof (mm):")
+        Text(stringResource(R.string.water_proof_label))
         TextField(
             modifier = Modifier.fillMaxWidth(),
             value = uiState.waterProof,
@@ -103,7 +106,7 @@ fun CreateTentForm(
         )
         Spacer(Modifier.height(16.dp))
 
-        Text("Tent Type:")
+        Text(stringResource(R.string.tent_type_label))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -121,7 +124,7 @@ fun CreateTentForm(
         }
         Spacer(Modifier.height(16.dp))
 
-        Text("Stock:")
+        Text(stringResource(R.string.stock_label))
         TextField(
             modifier = Modifier.fillMaxWidth(),
             value = uiState.stock,
@@ -132,7 +135,7 @@ fun CreateTentForm(
         )
         Spacer(Modifier.height(16.dp))
 
-        Text("Image URL:")
+        Text(stringResource(R.string.image_url_label))
         TextField(
             modifier = Modifier.fillMaxWidth(),
             value = uiState.imageUrl,
@@ -155,11 +158,11 @@ fun CreateTentForm(
                 },
                 enabled = uiState.isFormValid
             ) {
-                Text(text = if (uiState.editMode) "Update" else "Create")
+                Text(text = if (uiState.editMode) stringResource(R.string.update_button) else stringResource(R.string.create_button))
             }
 
             Button(onClick = onCancelButtonClick) {
-                Text(text = "Cancel")
+                Text(text = stringResource(R.string.cancel_button))
             }
         }
     }

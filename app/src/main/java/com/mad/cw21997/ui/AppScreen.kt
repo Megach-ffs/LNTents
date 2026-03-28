@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -34,6 +35,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -42,12 +45,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.mad.cw21997.R
 import com.mad.cw21997.data.Tent
 
 enum class AppScreen {
     TentList,
     CreateTent,
-    DeleteTent
+//    DeleteTent
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -101,9 +105,11 @@ fun AppScreen(
     Scaffold(
         topBar = {
             val title = when (currentRoute) {
-                AppScreen.CreateTent.name -> if (createTentUiState.editMode) "Edit Tent" else "Create Tent"
-                AppScreen.DeleteTent.name -> "Delete Tent"
-                else -> "Tents"
+
+
+                AppScreen.CreateTent.name -> if (createTentUiState.editMode) stringResource(R.string.app_bar_title_edit_tent) else stringResource(R.string.app_bar_title_create_tent)
+//              AppScreen.DeleteTent.name -> "Delete Tent"
+                else -> stringResource(R.string.app_bar_title_tents)
             }
             AppBar(title = title)
         },
@@ -113,7 +119,7 @@ fun AppScreen(
                     createTentModel.clearForm()
                     navController.navigate(AppScreen.CreateTent.name) 
                 }) {
-                    Text(text = "Add")
+                    Text(text = stringResource(R.string.fab_add))
                 }
 
 //                FloatingActionButton(onClick = {
@@ -142,7 +148,7 @@ fun AppScreen(
                 when (val state = tentListUiState) {
                     is TentListUIState.Loading -> {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text(text = "Loading...")
+                            Text(text = stringResource(R.string.loading_text))
                         }
                     }
 
@@ -151,7 +157,7 @@ fun AppScreen(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(text = "Error loading data")
+                            Text(text = stringResource(R.string.error_loading_text))
                         }
                     }
 
@@ -164,7 +170,7 @@ fun AppScreen(
                             },
                             onDeleteButtonClick = { tent -> 
                                 tentToDelete = tent
-                                navController.navigate(AppScreen.DeleteTent.name) 
+//                                navController.navigate(AppScreen.DeleteTent.name)
                             },
                             increaseStock = { tent ->
                                 tentListViewModel.increaseStock(tent)
@@ -183,32 +189,65 @@ fun AppScreen(
             composable(route = AppScreen.CreateTent.name) {
                 CreateTentForm(
                     onCreateButtonClick = {
-                        navController.navigate(AppScreen.TentList.name)
+                        navController.popBackStack()
                         tentListViewModel.fetchData()
                     },
                     onCancelButtonClick = {
                         createTentModel.clearForm()
-                        navController.navigate(AppScreen.TentList.name) },
+                        navController.popBackStack() 
+                    },
                     createTentModel = createTentModel,
                     modifier = Modifier.fillMaxSize()
                 )
             }
 
-            composable(route = AppScreen.DeleteTent.name) {
-                DeleteTentForm(
-                    onYesButtonClick = {
+//            composable(route = AppScreen.DeleteTent.name) {
+//                DeleteTentForm(
+//                    onYesButtonClick = {
+//                        tentToDelete?.let { tent ->
+//                            tentListViewModel.deleteTent(tent)
+//                        }
+//                        navController.navigate(AppScreen.TentList.name)
+//                    },
+//                    onNoButtonClick = {
+//                        tentToDelete = null
+//                        navController.navigate(AppScreen.TentList.name)
+//                    },
+//                    modifier = Modifier.fillMaxSize()
+//                )
+//            }
+        }
+
+        if (tentToDelete != null) {
+            AlertDialog(
+                onDismissRequest = {
+                    tentToDelete = null
+                },
+                title = {
+                    Text(text = stringResource(R.string.delete_dialog_title))
+                },
+                text = {
+                    Text(text = stringResource(R.string.delete_dialog_text))
+                },
+                confirmButton = {
+                    Button(onClick = {
                         tentToDelete?.let { tent ->
                             tentListViewModel.deleteTent(tent)
                         }
-                        navController.navigate(AppScreen.TentList.name)
-                    },
-                    onNoButtonClick = { 
                         tentToDelete = null
-                        navController.navigate(AppScreen.TentList.name)
-                    },
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
+                    }) { 
+                        Text(text = stringResource(R.string.yes_button))
+                    }
+                },
+                dismissButton = {
+                    Button(onClick = { 
+                        tentToDelete = null
+                    }) {
+                        Text(text = stringResource(R.string.no_button))
+                    }
+
+                }
+            )
         }
     }
 }

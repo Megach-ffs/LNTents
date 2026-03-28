@@ -3,25 +3,35 @@ package com.mad.cw21997.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.mad.cw21997.R
 import com.mad.cw21997.data.Tent
 
@@ -69,10 +79,27 @@ fun TentCard(
             .background(Color.White, shape = RoundedCornerShape(8.dp))
             .padding(8.dp)
     ) {
-        Image(
-            painter = painterResource(R.drawable.tent1),
-            contentDescription = null,
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(16f / 9f)
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color.LightGray),
+            contentAlignment = Alignment.Center
+        ) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(tent.imageUrl)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = tent.name,
+                placeholder = painterResource(R.drawable.tent1),
+                error = painterResource(R.drawable.tent1),
+                fallback = painterResource(R.drawable.tent1),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
 
         Text(
             modifier = Modifier.padding(top = 16.dp, start = 8.dp),
@@ -100,14 +127,26 @@ fun TentCard(
             Column (modifier = Modifier.padding(start = 16.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = "Type: ${tent.type}", modifier = Modifier.padding(vertical = 4.dp))
-                Text(text = "Capacity: ${tent.capacity} Person", modifier = Modifier.padding(vertical = 4.dp))
+                Text(
+                    text = stringResource(R.string.type_format, tent.type),
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+                Text(
+                    text = stringResource(R.string.capacity_format, tent.capacity),
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
             }
             Column(modifier = Modifier.padding(end = 16.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = "Waterproof: ${tent.waterProof} mm", modifier = Modifier.padding(vertical = 4.dp))
-                Text(text = "Weight: ${String.format("%.1f", tent.weight / 1000.0)} kg", modifier = Modifier.padding(vertical = 4.dp))
+                Text(
+                    text = stringResource(R.string.waterproof_format, tent.waterProof),
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+                Text(
+                    text = stringResource(R.string.weight_format, String.format("%.1f", tent.weight / 1000.0)),
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
             }
         }
 
@@ -119,20 +158,20 @@ fun TentCard(
         ){
             Row {
                 Button(onClick = onEditButtonClick) {
-                    Text(text = "Edit")
+                    Text(text = stringResource(R.string.edit_button))
                 }
                 Button(onClick = onDeleteButtonClick) {
-                    Text(text = "Delete")
+                    Text(text = stringResource(R.string.delete_button))
                 }
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Button(onClick = increaseStock) {
-                    Text(text = "+1")
+                    Text(text = stringResource(R.string.increase_stock))
                 }
                 Text(text = tent.stock.toString(), modifier = Modifier.padding(8.dp))
                 Button(onClick = decreaseStock) {
-                    Text(text = "-1")
+                    Text(text = stringResource(R.string.decrease_stock))
                 }
             }
         }
