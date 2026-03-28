@@ -7,23 +7,24 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.mad.cw21997.R
 import com.mad.cw21997.TentApplication
 import com.mad.cw21997.data.Tent
 import com.mad.cw21997.data.TentRepository
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.MutableSharedFlow
 
 class CreateTentModel(private val tentRepository: TentRepository): ViewModel() {
 
     private val _uiState = MutableStateFlow(CreateTentUIState())
     val uiState: StateFlow<CreateTentUIState> = _uiState.asStateFlow()
     
-    private val _userMessage = MutableSharedFlow<String>()
+    private val _userMessage = MutableSharedFlow<UiMessage>()
     val userMessage = _userMessage.asSharedFlow()
 
 
@@ -63,9 +64,9 @@ class CreateTentModel(private val tentRepository: TentRepository): ViewModel() {
 
     private fun validateName(name: String) {
         val error = when {
-            name.isBlank() -> "Model name cannot be empty"
-            name.length < 3 -> "Name must be at least 3 characters"
-            name.length > 50 -> "Name cannot exceed 50 characters"
+            name.isBlank() -> R.string.error_name_empty
+            name.length < 3 -> R.string.error_name_short
+            name.length > 50 -> R.string.error_name_long
             else -> null
         }
         _uiState.update { it.copy(nameError = error) }
@@ -78,8 +79,8 @@ class CreateTentModel(private val tentRepository: TentRepository): ViewModel() {
 
     private fun validateBrand(brand: String) {
         val error = when {
-            brand.isBlank() -> "Brand cannot be empty"
-            brand.length < 2 -> "Brand must be at least 2 characters"
+            brand.isBlank() -> R.string.error_brand_empty
+            brand.length < 2 -> R.string.error_brand_short
             else -> null
         }
         _uiState.update { it.copy(brandError = error) }
@@ -93,9 +94,9 @@ class CreateTentModel(private val tentRepository: TentRepository): ViewModel() {
     private fun validateCapacity(capacity: String) {
         val intVal = capacity.toIntOrNull()
         val error = when {
-            capacity.isBlank() -> "Capacity cannot be empty"
-            intVal == null -> "Must be a valid integer"
-            intVal <= 0 -> "Capacity must be greater than 0"
+            capacity.isBlank() -> R.string.error_capacity_empty
+            intVal == null -> R.string.error_invalid_integer
+            intVal <= 0 -> R.string.error_capacity_min
             else -> null
         }
         _uiState.update { it.copy(capacityError = error) }
@@ -109,9 +110,9 @@ class CreateTentModel(private val tentRepository: TentRepository): ViewModel() {
     private fun validateWeight(weight: String) {
         val intVal = weight.toIntOrNull()
         val error = when {
-            weight.isBlank() -> "Weight cannot be empty"
-            intVal == null -> "Must be a valid integer"
-            intVal <= 0 -> "Weight must be greater than 0"
+            weight.isBlank() -> R.string.error_weight_empty
+            intVal == null -> R.string.error_invalid_integer
+            intVal <= 0 -> R.string.error_weight_min
             else -> null
         }
         _uiState.update { it.copy(weightError = error) }
@@ -125,8 +126,8 @@ class CreateTentModel(private val tentRepository: TentRepository): ViewModel() {
     private fun validateWaterProof(waterProof: String) {
         val intVal = waterProof.toIntOrNull()
         val error = when {
-            waterProof.isBlank() -> "Water proof rating cannot be empty"
-            intVal == null -> "Must be a valid integer"
+            waterProof.isBlank() -> R.string.error_waterproof_empty
+            intVal == null -> R.string.error_invalid_integer
             else -> null
         }
         _uiState.update { it.copy(waterProofError = error) }
@@ -144,9 +145,9 @@ class CreateTentModel(private val tentRepository: TentRepository): ViewModel() {
     private fun validateStock(stock: String) {
         val intVal = stock.toIntOrNull()
         val error = when {
-            stock.isBlank() -> "Stock cannot be empty"
-            intVal == null -> "Must be a valid integer"
-            intVal < 0 -> "Stock cannot be negative"
+            stock.isBlank() -> R.string.error_stock_empty
+            intVal == null -> R.string.error_invalid_integer
+            intVal < 0 -> R.string.error_stock_negative
             else -> null
         }
         _uiState.update { it.copy(stockError = error) }
@@ -159,7 +160,7 @@ class CreateTentModel(private val tentRepository: TentRepository): ViewModel() {
 
     private fun validateImageUrl(url: String) {
         val error = when {
-            url.isNotBlank() && !Patterns.WEB_URL.matcher(url).matches() -> "Invalid URL format"
+            url.isNotBlank() && !Patterns.WEB_URL.matcher(url).matches() -> R.string.error_invalid_url
             else -> null
         }
         _uiState.update { it.copy(imageUrlError = error) }
@@ -190,10 +191,9 @@ class CreateTentModel(private val tentRepository: TentRepository): ViewModel() {
                 }
                 clearForm()
                 onSuccess()
-                _userMessage.emit("Tent saved successfully")
+                _userMessage.emit(UiMessage.Plain(R.string.message_tent_saved))
             } catch (e: Exception) {
-                // Handle error
-                _userMessage.emit("Error saving tent")
+                _userMessage.emit(UiMessage.Plain(R.string.message_error_saving))
             }
         }
     }

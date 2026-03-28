@@ -89,16 +89,25 @@ fun AppScreen(
     var tentToDelete by remember { mutableStateOf<Tent?>(null) }
 
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         tentListViewModel.userMessage.collect { message ->
-            snackbarHostState.showSnackbar(message)
+            val text = when (message) {
+                is UiMessage.Plain -> context.getString(message.resId)
+                is UiMessage.WithArgs -> context.getString(message.resId, *message.args.toTypedArray())
+            }
+            snackbarHostState.showSnackbar(text)
         }
     }
 
     LaunchedEffect(Unit) {
         createTentModel.userMessage.collect { message ->
-            snackbarHostState.showSnackbar(message)
+            val text = when (message) {
+                is UiMessage.Plain -> context.getString(message.resId)
+                is UiMessage.WithArgs -> context.getString(message.resId, *message.args.toTypedArray())
+            }
+            snackbarHostState.showSnackbar(text)
         }
     }
 
@@ -268,16 +277,16 @@ fun DeleteTentForm(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text("Are you sure you want to delete this tent?")
+            Text(stringResource(R.string.delete_dialog_text))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Button(onClick = onYesButtonClick) {
-                    Text(text = "Yes")
+                    Text(text = stringResource(R.string.yes_button))
                 }
                 Button(onClick = onNoButtonClick) {
-                    Text(text = "No")
+                    Text(text = stringResource(R.string.no_button))
                 }
             }
         }

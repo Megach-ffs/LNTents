@@ -1,36 +1,30 @@
 package com.mad.cw21997.ui
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.mad.cw21997.R
 import com.mad.cw21997.TentApplication
-import com.mad.cw21997.data.NetworkTentRepository
 import com.mad.cw21997.data.Tent
 import com.mad.cw21997.data.TentRepository
-import com.mad.cw21997.data.TentTestData
-//import com.mad.cw21997.network.TentApi
-import com.mad.cw21997.network.TentApiService
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.io.IOException
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-//import com.mad.cw21997.R
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 
 class TentListViewModel(private val tentRepository: TentRepository) : ViewModel() {
     private val _uiState = MutableStateFlow<TentListUIState>(TentListUIState.Loading)
     val uiState: StateFlow<TentListUIState> = _uiState.asStateFlow()
 
-    private val _userMessage = MutableSharedFlow<String>()
+    private val _userMessage = MutableSharedFlow<UiMessage>()
     val userMessage = _userMessage.asSharedFlow()
 
     init {
@@ -55,11 +49,11 @@ class TentListViewModel(private val tentRepository: TentRepository) : ViewModel(
                 _uiState.value = TentListUIState.Success(listResult)
             } catch (e: IOException) {
                 _uiState.value = TentListUIState.Error
-                _userMessage.emit("Network error")
+                _userMessage.emit(UiMessage.Plain(R.string.message_network_error))
                 Log.e("TentListViewModel", "Network error", e)
             } catch (e: Exception) {
                 _uiState.value = TentListUIState.Error
-                _userMessage.emit("")
+                _userMessage.emit(UiMessage.Plain(R.string.message_unknown_error))
                 Log.e("TentListViewModel", "Unknown error", e)
             }
         }
@@ -71,9 +65,9 @@ class TentListViewModel(private val tentRepository: TentRepository) : ViewModel(
                 val updatedTent = tent.copy(stock = tent.stock + 1)
                 tentRepository.updateTent(updatedTent)
                 fetchData()
-                _userMessage.emit("Stock increased for ${tent.name}")
+                _userMessage.emit(UiMessage.WithArgs(R.string.message_stock_increased, listOf(tent.name)))
             } catch (e: Exception) {
-                _userMessage.emit("Failed to update stock")
+                _userMessage.emit(UiMessage.Plain(R.string.message_update_failed))
             }
         }
     }
@@ -85,9 +79,9 @@ class TentListViewModel(private val tentRepository: TentRepository) : ViewModel(
                 val updatedTent = tent.copy(stock = tent.stock - 1)
                 tentRepository.updateTent(updatedTent)
                 fetchData()
-                _userMessage.emit("Stock decreased for ${tent.name}")
+                _userMessage.emit(UiMessage.WithArgs(R.string.message_stock_decreased, listOf(tent.name)))
             } catch (e: Exception) {
-                _userMessage.emit("Failed to update stock")
+                _userMessage.emit(UiMessage.Plain(R.string.message_update_failed))
             }
         }
     }
@@ -97,9 +91,9 @@ class TentListViewModel(private val tentRepository: TentRepository) : ViewModel(
             try {
                 tentRepository.deleteTent(tent)
                 fetchData()
-                _userMessage.emit("Tent deleted: ${tent.name}")
+                _userMessage.emit(UiMessage.WithArgs(R.string.message_tent_deleted, listOf(tent.name)))
             } catch (e: Exception) {
-                _userMessage.emit("Error deleting tent")
+                _userMessage.emit(UiMessage.Plain(R.string.message_delete_failed))
             }
         }
     }

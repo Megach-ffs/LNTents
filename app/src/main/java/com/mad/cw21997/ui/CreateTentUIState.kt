@@ -3,20 +3,20 @@ package com.mad.cw21997.ui
 data class CreateTentUIState (
     val id: Int = 0,
     val name: String = "",
-    val nameError: String? = null,
+    val nameError: Int? = null,
     val brand: String = "",
-    val brandError: String? = null,
+    val brandError: Int? = null,
     val capacity: String = "",
-    val capacityError: String? = null,
+    val capacityError: Int? = null,
     val weight: String = "",
-    val weightError: String? = null,
+    val weightError: Int? = null,
     val waterProof: String = "",
-    val waterProofError: String? = null,
+    val waterProofError: Int? = null,
     val type: String = "Dome",
     val stock: String = "",
-    val stockError: String? = null,
+    val stockError: Int? = null,
     val imageUrl: String = "",
-    val imageUrlError: String? = null,
+    val imageUrlError: Int? = null,
     val editMode: Boolean = false
 ) {
     val isFormValid: Boolean
